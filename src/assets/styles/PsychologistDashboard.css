@@ -1,0 +1,140 @@
+/* PsychologistDashboard.css */
+
+.dashboard-container {
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+  
+  .dashboard-title {
+    color: #6802C1;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+  
+  .dashboard-content {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  /* Columna del calendario */
+  .calendar-column {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  /* Personalización del calendario (sin bordes redondeados) */
+  .custom-calendar {
+    width: 100%;
+    border: 1px solid #ccc;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  /* Cambios en el calendario: tile activo y ahora */
+  .react-calendar__tile--active {
+    background: #6802C1 !important;
+    color: white !important;
+  }
+  .react-calendar__tile--now {
+    background: #007bff !important;
+    color: white !important;
+  }
+  
+  /* Columna de citas */
+  .appointments-column {
+    flex: 2;
+    min-width: 300px;
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .appointments-title {
+    color: #6802C1;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .no-citas {
+    color: #888;
+    font-style: italic;
+  }
+  
+  .citas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+  
+  .cita-card {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+  }
+  
+  .cita-card:hover {
+    transform: scale(1.02);
+  }
+  
+  .cita-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .hora-text {
+    display: flex;
+    align-items: center;
+  }
+  
+  .label {
+    font-weight: bold;
+    margin-right: 4px;
+  }
+  
+  .time {
+    font-size: 16px;
+  }
+  
+  .icon-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.2rem;
+  }
+  
+  .cita-estudiante,
+  .cita-estado {
+    margin: 5px 0;
+    font-size: 0.9rem;
+  }
+  
+  /* Colores según el estado */
+  .cita-card.pendiente {
+    background-color: #fff3cd;
+  }
+  
+  .cita-card.atendida {
+    background-color: #d4edda;
+  }
+  
+  .cita-card.no_asistio {
+    background-color: #f8d7da;
+  }
+  
+  .cita-card.cancelada {
+    background-color: #e0e0e0;
+  }
+  
+  .cita-card.reprogramada {
+    background-color: #bbdefb;
+  }
+  

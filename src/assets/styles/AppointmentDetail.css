@@ -1,0 +1,150 @@
+/* Global box-sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+/* Contenedor principal */
+.appointment-detail-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título principal */
+.detail-header {
+  text-align: center;
+  color: #6802C1;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+/* Detalle de la cita */
+.detail-info {
+  margin-bottom: 20px;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+.detail-info p {
+  margin: 5px 0;
+}
+
+/* Formulario */
+.detail-form {
+  width: 100%;
+}
+.form-section {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 1.4rem;
+  color: #6802C1;
+  border-bottom: 2px solid #6802C1;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+}
+.detail-form .form-group {
+  margin-bottom: 15px;
+}
+.detail-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Estilos uniformes para inputs, selects y textareas */
+.detail-form input[type="text"],
+.detail-form input[type="email"],
+.detail-form select,
+.detail-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  /* Opcional: evita que el usuario cambie el tamaño horizontalmente */
+  resize: vertical;
+}
+
+/* Radio group */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.radio-group label {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+.radio-group input[type="radio"] {
+  margin-right: 5px;
+}
+
+/* Contenedor de slots */
+.slots-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.slot-button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.slot-button.active,
+.slot-button:hover {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+/* Botón de submit */
+.submit-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #6802C1;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.submit-button:hover {
+  background-color: #5401a3;
+}
+
+/* Mensajes de carga y error */
+.loading-text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6802C1;
+}
+.error-text {
+  text-align: center;
+  font-size: 1.1rem;
+  color: red;
+}
+
+
+  

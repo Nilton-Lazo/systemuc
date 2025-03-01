@@ -41,7 +41,7 @@ const AppointmentDetail = ({ psicologo }) => {
     fetchCita();
   }, [fetchCita]);
 
-  // Obtener horarios disponibles para la cita de seguimiento (filtrando por psicologo.id)
+  // Obtener horarios disponibles para la cita de seguimiento
   const fetchAvailableSlots = async (date) => {
     try {
       const fechaStr = date.toISOString().slice(0, 10);
@@ -62,14 +62,11 @@ const AppointmentDetail = ({ psicologo }) => {
     fetchAvailableSlots(date);
   };
 
-  // Un solo botón "Guardar Detalles" que actualiza la cita actual y agenda la cita de seguimiento (si corresponde)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Actualizar la atención de la cita actual
     const payload = {
       psicologoId: psicologo.id,
       estado: attended,
-      // El campo observaciones se enviará dentro de cada rama
     };
 
     if (attended === 'atendida') {
@@ -85,7 +82,6 @@ const AppointmentDetail = ({ psicologo }) => {
     try {
       await axios.put(`${process.env.REACT_APP_PSI_API_URL}/cita/${id}`, payload);
       let finalMessage = "Cita actualizada correctamente";
-      // Si se requiere seguimiento, agenda la cita de seguimiento
       if (followUpNeeded === 'si') {
         if (!selectedSlot) {
           alert("Debes seleccionar un horario para la cita de seguimiento.");
@@ -94,7 +90,7 @@ const AppointmentDetail = ({ psicologo }) => {
         const followUpPayload = {
           estudianteId: cita.estudiante.id,
           psicologoId: psicologo.id,
-          motivo: "seguimiento", // se fija automáticamente
+          motivo: "seguimiento",
           fecha: followUpDate.toISOString().slice(0, 10),
           hora: selectedSlot.hora,
           modalidad: followUpModalidad,
@@ -124,6 +120,16 @@ const AppointmentDetail = ({ psicologo }) => {
 
   if (loading) return <p className="loading-text">Cargando...</p>;
   if (!cita) return <p className="error-text">Cita no encontrada</p>;
+
+  // Agrupar los horarios disponibles en mañana y tarde usando el valor numérico de la hora
+  const morningSlots = availableSlots.filter(slot => {
+    const hourNumber = parseInt(slot.hora.split(":")[0], 10);
+    return hourNumber < 12;
+  });
+  const afternoonSlots = availableSlots.filter(slot => {
+    const hourNumber = parseInt(slot.hora.split(":")[0], 10);
+    return hourNumber >= 12;
+  });
 
   return (
     <div className="appointment-detail-container">
@@ -305,16 +311,38 @@ const AppointmentDetail = ({ psicologo }) => {
                     <p>No hay horarios disponibles para la fecha seleccionada.</p>
                   ) : (
                     <div className="slots-container">
-                      {availableSlots.map(slot => (
-                        <button
-                          key={slot.id}
-                          type="button"
-                          onClick={() => setSelectedSlot(slot)}
-                          className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
-                        >
-                          {slot.hora}
-                        </button>
-                      ))}
+                      {morningSlots.length > 0 && (
+                        <div className="slot-group">
+                          <h4>Horarios de la mañana</h4>
+                          {morningSlots.map(slot => (
+                            <button
+                              key={slot.id}
+                              type="button"
+                              onClick={() => setSelectedSlot(slot)}
+                              className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
+                              style={{ margin: '5px' }}
+                            >
+                              {slot.hora}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {afternoonSlots.length > 0 && (
+                        <div className="slot-group">
+                          <h4>Horarios de la tarde</h4>
+                          {afternoonSlots.map(slot => (
+                            <button
+                              key={slot.id}
+                              type="button"
+                              onClick={() => setSelectedSlot(slot)}
+                              className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
+                              style={{ margin: '5px' }}
+                            >
+                              {slot.hora}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

@@ -1,0 +1,263 @@
+.report-container {
+  padding: 20px;
+  margin-top: 50px;
+}
+
+/* ColumnFilter styles */
+.column-filter {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-header {
+  padding: 5px 10px;
+  background-color: #8C68CE;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.filter-selected {
+  font-size: 0.8rem;
+  margin-left: 5px;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #8C68CE;
+  border-radius: 5px;
+  width: auto;
+  min-width: 120px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #333;
+  text-align: left; /* Alinea el texto a la izquierda */
+}
+
+.filter-dropdown-option {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-align: left; /* Alinea el texto de cada opción a la izquierda */
+}
+
+.filter-dropdown-option:hover {
+  background-color: #8C68CE;
+  color: #fff;
+}
+
+.option-bullet {
+  margin-right: 5px;
+  flex-shrink: 0;
+  text-align: left;
+  width: 20px;
+}
+
+/* Table container con scroll horizontal */
+.table-container {
+  overflow-x: visible;
+  margin-bottom: 20px;
+}
+
+/* Definimos un min-width para la tabla */
+table {
+  min-width: 1500px;
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.9rem;
+  font-family: inherit;
+  table-layout: fixed;
+}
+
+table th {
+  background-color: #8C68CE;
+  color: #fff;
+  font-weight: bold;
+  height: 60px;
+  padding: 10px 8px;
+}
+
+/* Clase para columnas normales */
+.default-column {
+  width: 130px;
+}
+
+/* Clase para la columna Observaciones (más larga horizontalmente) */
+.long-column {
+  width: 400px !important;
+}
+
+/* Fijamos la altura de todas las celdas */
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  vertical-align: middle;
+  text-transform: none !important;
+  height: 50px;
+  overflow: hidden;
+}
+
+/* Para la columna Observaciones, scroll vertical */
+.scrollable-cell {
+  height: 50px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: normal;
+  display: block;
+  padding: 4px;
+}
+
+/* Botón de exportación */
+.export-button-container {
+  text-align: right;
+}
+
+/* Contenedor para botón de Excel y contador alineados */
+.export-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Filtros activos */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.filter-chip {
+  background-color: #e0e0e0;
+  border-radius: 15px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #333;
+}
+
+.filter-chip button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Botón para eliminar filtros */
+.clear-filters {
+  background-color: #8C68CE;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Contador de citas */
+.counter {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+/* Estilos para el input de "Días personalizados" */
+.custom-input {
+  padding: 8px;
+  border: 1px solid #ccc; /* Borde por defecto */
+  border-radius: 22px;
+  font-size: 1rem;
+  font-family: inherit;
+  text-align: center;
+  background-color: #fff;
+}
+
+.custom-input:focus {
+  border: 2px solid #8C68CE; /* Borde más grueso y con color al enfocar */
+  border-radius: 22px;
+  outline: none; /* Opcional: remueve el outline predeterminado */
+}
+
+/* Estilos para los checkboxes personalizados */
+.custom-checkbox {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+}
+
+.custom-checkbox:checked {
+  accent-color: #8C68CE;
+}
+
+/* Botones personalizados */
+.custom-button {
+  padding: 8px 12px;
+  background-color: #8C68CE;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 22px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #6848B0;
+  transform: scale(1.05); /* Pequeño efecto de escalado */
+}
+
+/* Botón específico para Exportar a Excel: color más claro */
+.excel-button {
+  background-color: #4CAF50; /* Color más claro para Excel */
+  border-radius: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.excel-button:hover {
+  background-color: #45a049;
+  transform: scale(1.05); /* Pequeño efecto de escalado */
+}
+
+.dashboard-title {
+  color: #6802C1;
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.counter {
+  color: #000000;
+  margin-bottom: 15px;
+  font-size: 2rem;
+}
+
+.date-filter {
+  color:#6848B0;
+}
+
+.day-personalized {
+  color:#6848B0;
+}
+
+.year-month {
+  color:#6848B0;
+}

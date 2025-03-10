@@ -1,0 +1,101 @@
+/* src/assets/styles/Header.css */
+.app-header {
+  position: fixed;          /* Fija el header en la parte superior */
+  top: 0;
+  left: 0;
+  width: 100vw;             /* Ocupa todo el ancho de la ventana */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #6802C1;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  z-index: 1000;
+  font-family: 'Roboto', sans-serif; /* Fuente profesional */
+}
+
+.header-left {
+  display: flex;
+  gap: 15px;
+}
+
+.header-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold; /* Texto en negrita */
+  padding: 8px 12px; /* Agrega un poco de padding para que se note más el botón */
+  border-radius: 5px; /* Bordes redondeados */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.header-button:hover {
+  background-color: #8C68CE; /* Cambia el fondo al pasar el mouse */
+  transform: scale(1.05); /* Pequeño efecto de escalado */
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.greeting {
+  color: white;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Menú desplegable: se oculta automáticamente al hacer click fuera (controlado en JS) */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 10px 15px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+}
+
+.dropdown-menu button:hover {
+  background-color: #8C68CE;
+  color: #fff;
+}
+
+/* Media query para dispositivos pequeños */
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+  .header-left {
+    margin-bottom: 10px;
+  }
+  .header-right {
+    margin-top: 10px;
+  }
+}

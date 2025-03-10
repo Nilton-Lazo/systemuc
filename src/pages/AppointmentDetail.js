@@ -4,11 +4,17 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../assets/styles/AppointmentDetail.css';
 
+// Función para parsear una fecha "YYYY-MM-DD" como fecha local (sin desfase)
+const parseLocalDate = (dateStr) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
 const AppointmentDetail = ({ psicologo }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Estados para la cita actual
+
+  // Estados de la cita principal
   const [cita, setCita] = useState(null);
   const [loading, setLoading] = useState(true);
   const [attended, setAttended] = useState(null);
@@ -17,14 +23,19 @@ const AppointmentDetail = ({ psicologo }) => {
   const [medioContacto, setMedioContacto] = useState('');
   const [recomendacion, setRecomendacion] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  
+
   // Estados para la cita de seguimiento
-  const [followUpNeeded, setFollowUpNeeded] = useState(null); // 'si' o 'no'
-  const [followUpModalidad, setFollowUpModalidad] = useState(''); // 'virtual' o 'presencial'
+  // followUpNeeded: 'si' o 'no'
+  const [followUpNeeded, setFollowUpNeeded] = useState('');
+  // followUpModalidad: 'virtual' o 'presencial'
+  const [followUpModalidad, setFollowUpModalidad] = useState('');
   const [followUpDate, setFollowUpDate] = useState(new Date());
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [reservedFollowUpSlot, setReservedFollowUpSlot] = useState(null);
+  const [followUpLoading, setFollowUpLoading] = useState(false);
 
+  // Función para obtener la cita principal
   const fetchCita = useCallback(async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_PSI_API_URL}/cita/${id}`);
@@ -41,27 +52,102 @@ const AppointmentDetail = ({ psicologo }) => {
     fetchCita();
   }, [fetchCita]);
 
-  // Obtener horarios disponibles para la cita de seguimiento
-  const fetchAvailableSlots = async (date) => {
+  // Precargar datos de atención si ya existen
+  useEffect(() => {
+    if (cita && cita.atencionCita) {
+      setAreaDerivacion(cita.atencionCita.areaDerivacion || '');
+      setDiagnosticoPresuntivo(cita.atencionCita.diagnosticoPresuntivo || '');
+      setMedioContacto(cita.atencionCita.medioContacto || '');
+      setRecomendacion(cita.atencionCita.recomendaciones || '');
+      setObservaciones(cita.atencionCita.observaciones || '');
+    }
+  }, [cita]);
+
+  // Función para obtener los horarios disponibles (se usa en el calendario de seguimiento)
+  const fetchAvailableSlots = useCallback(async (date) => {
     try {
       const fechaStr = date.toISOString().slice(0, 10);
       const response = await axios.get(`${process.env.REACT_APP_PSI_API_URL}/horarios-disponibles`, {
-        params: {
-          fecha: fechaStr,
-          psicologoId: psicologo.id
-        },
+        params: { fecha: fechaStr, psicologoId: psicologo.id }
       });
-      setAvailableSlots(response.data.horarios);
+      return response.data.horarios;
     } catch (error) {
       console.error("Error fetching available slots:", error);
+      return [];
     }
-  };
+  }, [psicologo.id]);
+
+  // Función para traer la cita de seguimiento
+  const fetchFollowUp = useCallback(async () => {
+    setFollowUpLoading(true);
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_PSI_API_URL}/cita/followup/${id}`);
+      if (response.data && response.data.cita) {
+        const followUpCita = response.data.cita;
+        // Modo solo lectura: se muestran los datos de seguimiento
+        setFollowUpNeeded('si');
+        setFollowUpModalidad(followUpCita.tipo || '');
+        let fechaStr = '';
+        if (typeof followUpCita.fecha === 'string') {
+          fechaStr = followUpCita.fecha.includes('T') ? followUpCita.fecha.slice(0, 10) : followUpCita.fecha;
+        } else {
+          fechaStr = followUpCita.fecha.toISOString().slice(0, 10);
+        }
+        const localFecha = parseLocalDate(fechaStr);
+        setFollowUpDate(localFecha);
+        let slots = await fetchAvailableSlots(localFecha);
+        // Si la hora reservada no figura entre las opciones, agrégala manualmente
+        if (!slots.some(s => s.hora === followUpCita.hora)) {
+          slots.push({
+            hora: followUpCita.hora,
+            id: `${psicologo.id}-${followUpCita.hora}`,
+            psicologoId: psicologo.id,
+            nombrePsicologo: "Psicól. " + psicologo.nombre
+          });
+        }
+        setAvailableSlots(slots);
+        const reservedSlot = { 
+          hora: followUpCita.hora, 
+          id: `${psicologo.id}-${followUpCita.hora}`,
+          calendarEventId: followUpCita.calendarEventId 
+        };
+        setReservedFollowUpSlot(reservedSlot);
+        setSelectedSlot(reservedSlot);
+      } else {
+        // No hay cita de seguimiento guardada
+        setFollowUpNeeded('');
+      }
+    } catch (error) {
+      console.error("Error fetching follow-up appointment:", error);
+      setFollowUpNeeded('');
+    } finally {
+      setFollowUpLoading(false);
+    }
+  }, [id, psicologo.id, psicologo.nombre, fetchAvailableSlots]);
+
+  useEffect(() => {
+    if (cita) {
+      fetchFollowUp();
+    }
+  }, [cita, fetchFollowUp]);
 
   const handleFollowUpDateChange = (date) => {
     setFollowUpDate(date);
-    fetchAvailableSlots(date);
+    fetchAvailableSlots(date).then(slots => setAvailableSlots(slots));
   };
 
+  // Función para formatear la fecha en formato largo en español
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC'
+    });
+  };
+
+  // Manejo del submit: se actualiza la cita principal y, si es la primera atención, se reserva la cita de seguimiento
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
@@ -82,22 +168,27 @@ const AppointmentDetail = ({ psicologo }) => {
     try {
       await axios.put(`${process.env.REACT_APP_PSI_API_URL}/cita/${id}`, payload);
       let finalMessage = "Cita actualizada correctamente";
-      if (followUpNeeded === 'si') {
-        if (!selectedSlot) {
-          alert("Debes seleccionar un horario para la cita de seguimiento.");
-          return;
+      // Si es la primera atención (no existe atencionCita), se reserva la cita de seguimiento según lo seleccionado
+      if (!cita.atencionCita) {
+        if (followUpNeeded === 'si') {
+          if (!selectedSlot) {
+            alert("Debes seleccionar un horario para la cita de seguimiento.");
+            return;
+          }
+          const followUpPayload = {
+            estudianteId: cita.estudiante.id,
+            psicologoId: psicologo.id,
+            motivo: "seguimiento",
+            fecha: followUpDate.toISOString().slice(0, 10),
+            hora: selectedSlot.hora,
+            modalidad: followUpModalidad,
+            citaPreviaId: cita.id,
+          };
+          await axios.post(`${process.env.REACT_APP_PSI_API_URL}/reservar-cita`, followUpPayload);
+          finalMessage += " y cita de seguimiento agendada correctamente";
+        } else if (followUpNeeded === 'no') {
+          finalMessage += " y no se reservo ninguna cita de seguimiento";
         }
-        const followUpPayload = {
-          estudianteId: cita.estudiante.id,
-          psicologoId: psicologo.id,
-          motivo: "seguimiento",
-          fecha: followUpDate.toISOString().slice(0, 10),
-          hora: selectedSlot.hora,
-          modalidad: followUpModalidad,
-          citaPreviaId: cita.id,
-        };
-        await axios.post(`${process.env.REACT_APP_PSI_API_URL}/reservar-cita`, followUpPayload);
-        finalMessage += " y cita de seguimiento agendada correctamente";
       }
       alert(finalMessage);
       fetchCita();
@@ -108,20 +199,10 @@ const AppointmentDetail = ({ psicologo }) => {
     }
   };
 
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('es-ES', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'UTC'
-    });
-  };
-
   if (loading) return <p className="loading-text">Cargando...</p>;
   if (!cita) return <p className="error-text">Cita no encontrada</p>;
 
-  // Agrupar los horarios disponibles en mañana y tarde usando el valor numérico de la hora
+  // Dividir los horarios disponibles en franjas de mañana y tarde
   const morningSlots = availableSlots.filter(slot => {
     const hourNumber = parseInt(slot.hora.split(":")[0], 10);
     return hourNumber < 12;
@@ -270,83 +351,107 @@ const AppointmentDetail = ({ psicologo }) => {
         {attended === 'atendida' && (
           <div className="form-section">
             <h3 className="section-title">Cita de Seguimiento</h3>
-            <div className="form-group">
-              <label>¿El estudiante necesita una cita de seguimiento?</label>
-              <div className="radio-group">
-                <label>
-                  <input 
-                    type="radio" 
-                    value="si" 
-                    checked={followUpNeeded === 'si'} 
-                    onChange={(e) => setFollowUpNeeded(e.target.value)}
-                  /> Sí
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    value="no" 
-                    checked={followUpNeeded === 'no'} 
-                    onChange={(e) => setFollowUpNeeded(e.target.value)}
-                  /> No
-                </label>
+            {followUpLoading ? (
+              <div className="loading-container">
+                <p>Cargando seguimiento...</p>
               </div>
-            </div>
-            {followUpNeeded === 'si' && (
-              <div>
-                <div className="form-group">
-                  <label>Selecciona el tipo de cita para seguimiento:</label>
-                  <select value={followUpModalidad} onChange={(e) => setFollowUpModalidad(e.target.value)} className="select-field">
-                    <option value="">Seleccione</option>
-                    <option value="virtual">Virtual</option>
-                    <option value="presencial">Presencial</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Selecciona la fecha para el seguimiento:</label>
-                  <Calendar onChange={handleFollowUpDateChange} value={followUpDate} />
-                </div>
-                <div className="form-group">
-                  <label>Selecciona un horario:</label>
-                  {availableSlots.length === 0 ? (
-                    <p>No hay horarios disponibles para la fecha seleccionada.</p>
-                  ) : (
-                    <div className="slots-container">
-                      {morningSlots.length > 0 && (
-                        <div className="slot-group">
-                          <h4>Horarios de la mañana</h4>
-                          {morningSlots.map(slot => (
-                            <button
-                              key={slot.id}
-                              type="button"
-                              onClick={() => setSelectedSlot(slot)}
-                              className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
-                              style={{ margin: '5px' }}
-                            >
-                              {slot.hora}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {afternoonSlots.length > 0 && (
-                        <div className="slot-group">
-                          <h4>Horarios de la tarde</h4>
-                          {afternoonSlots.map(slot => (
-                            <button
-                              key={slot.id}
-                              type="button"
-                              onClick={() => setSelectedSlot(slot)}
-                              className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
-                              style={{ margin: '5px' }}
-                            >
-                              {slot.hora}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+            ) : (
+              // Si ya existe atención (atenciones posteriores), se muestra solo en modo lectura:
+              // Si existe reservedFollowUpSlot se muestran sus datos, de lo contrario se muestra el mensaje.
+              cita.atencionCita ? (
+                reservedFollowUpSlot ? (
+                  <div className="form-group">
+                    <p><strong>Tipo de cita:</strong> {followUpModalidad}</p>
+                    <p><strong>Fecha de seguimiento:</strong> {formatDate(followUpDate)}</p>
+                    <p><strong>Hora de atención:</strong> {reservedFollowUpSlot.hora}</p>
+                  </div>
+                ) : (
+                  <p>No se reservo ninguna cita de seguimiento</p>
+                )
+              ) : (
+                // Primera atención: se muestra el formulario para reservar la cita de seguimiento sin el mensaje de "No se reservo..."
+                <div>
+                  <div className="form-group">
+                    <label>¿El estudiante necesita una cita de seguimiento?</label>
+                    <div className="radio-group">
+                      <label>
+                        <input 
+                          type="radio" 
+                          value="si" 
+                          checked={followUpNeeded === 'si'} 
+                          onChange={(e) => setFollowUpNeeded(e.target.value)}
+                        /> Sí
+                      </label>
+                      <label>
+                        <input 
+                          type="radio" 
+                          value="no" 
+                          checked={followUpNeeded === 'no'} 
+                          onChange={(e) => setFollowUpNeeded(e.target.value)}
+                        /> No
+                      </label>
                     </div>
+                  </div>
+                  {followUpNeeded === 'si' && (
+                    <>
+                      <div className="form-group">
+                        <label>Selecciona el tipo de cita para seguimiento:</label>
+                        <select value={followUpModalidad} onChange={(e) => setFollowUpModalidad(e.target.value)} className="select-field">
+                          <option value="">Seleccione</option>
+                          <option value="virtual">Virtual</option>
+                          <option value="presencial">Presencial</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Selecciona la fecha para el seguimiento:</label>
+                        <Calendar onChange={handleFollowUpDateChange} value={followUpDate} />
+                      </div>
+                      <div className="form-group">
+                        <label>Selecciona un horario:</label>
+                        {availableSlots.length === 0 ? (
+                          <p>No hay horarios disponibles para la fecha seleccionada.</p>
+                        ) : (
+                          <div className="slots-container">
+                            {morningSlots.length > 0 && (
+                              <div className="slot-group">
+                                <h4>Horarios de la mañana</h4>
+                                {morningSlots.map(slot => (
+                                  <button
+                                    key={slot.id}
+                                    type="button"
+                                    onClick={() => setSelectedSlot(slot)}
+                                    className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
+                                    style={{ margin: '5px' }}
+                                  >
+                                    {slot.hora}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {afternoonSlots.length > 0 && (
+                              <div className="slot-group">
+                                <h4>Horarios de la tarde</h4>
+                                {afternoonSlots.map(slot => (
+                                  <button
+                                    key={slot.id}
+                                    type="button"
+                                    onClick={() => setSelectedSlot(slot)}
+                                    className={`slot-button ${selectedSlot && selectedSlot.id === slot.id ? 'active' : ''}`}
+                                    style={{ margin: '5px' }}
+                                  >
+                                    {slot.hora}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </>
                   )}
+                  {/* En la primera atención, si se selecciona "no", no mostramos el mensaje */}
                 </div>
-              </div>
+              )
             )}
           </div>
         )}
@@ -358,4 +463,3 @@ const AppointmentDetail = ({ psicologo }) => {
 };
 
 export default AppointmentDetail;
-

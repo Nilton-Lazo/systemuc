@@ -104,9 +104,9 @@ body {
   gap: 10px;
 }
 .slot-button {
-  padding: 8px 12px;
+  padding: 8px 12px;                                            
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 30px;
   background-color: #f0f0f0;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -114,7 +114,10 @@ body {
 .slot-button.active,
 .slot-button:hover {
   background-color: #4caf50;
+  border-radius: 30px;
   color: #fff;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  transform: scale(1.05); /* Pequeño efecto de escalado */
 }
 
 /* Botón de submit */

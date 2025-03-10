@@ -13,11 +13,15 @@ const Login = () => {
     flow: 'auth-code',
     hostedDomain: 'continental.edu.pe',
     access_type: 'offline',
+    redirect_uri: `${window.location.origin}/auth/callback`,
     onSuccess: async (response) => {
       try {
         const res = await axios.post(
           `${process.env.REACT_APP_API_URL}/google-signin`,
-          { code: response.code }
+          { 
+            code: response.code,
+            redirect_uri: `${window.location.origin}/auth/callback` 
+          }
         );
         const user = res.data.usuario;
         // Si es psicólogo o administrador y falta teléfono o sede, el perfil está incompleto.

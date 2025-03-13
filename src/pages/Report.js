@@ -298,15 +298,17 @@ const Report = ({ psicologo }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_PSI_API_URL}/reporte`);
+        const res = await axios.get(`${process.env.REACT_APP_PSI_API_URL}/reporte?psicologoId=${psicologo.id}`);
         setData(res.data.data);
         setFilteredData(res.data.data);
       } catch (err) {
         console.error('Error al obtener los datos del reporte:', err);
       }
     };
-    fetchData();
-  }, []);
+    if (psicologo?.id) {
+      fetchData();
+    }
+  }, [psicologo.id]);
 
   // Extraer opciones únicas para filtros de columnas
   useEffect(() => {

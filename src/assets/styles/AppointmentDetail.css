@@ -14,7 +14,7 @@ body {
 /* Contenedor principal */
 .appointment-detail-container {
   max-width: 800px;
-  margin: 30px auto;
+  margin: 100px auto 30px auto;  /* Espacio superior para separarlo del header fijo */
   padding: 20px;
   background-color: #fff;
   border: 1px solid #ccc;
@@ -23,6 +23,7 @@ body {
 }
 
 /* Título principal */
+/* Se muestra "Derivado" si es modo derivación; de lo contrario, "Detalle de Cita" */
 .detail-header {
   text-align: center;
   color: #6802C1;
@@ -30,7 +31,7 @@ body {
   font-size: 1.8rem;
 }
 
-/* Detalle de la cita */
+/* Detalle de la cita (modo normal) */
 .detail-info {
   margin-bottom: 20px;
   line-height: 1.6;
@@ -67,7 +68,7 @@ body {
   font-size: 1rem;
 }
 
-/* Estilos uniformes para inputs, selects y textareas */
+/* Estilos uniformes para inputs, selects y textareas (modo normal) */
 .detail-form input[type="text"],
 .detail-form input[type="email"],
 .detail-form select,
@@ -78,7 +79,6 @@ body {
   border-radius: 4px;
   font-size: 1rem;
   font-family: inherit;
-  /* Opcional: evita que el usuario cambie el tamaño horizontalmente */
   resize: vertical;
 }
 
@@ -104,7 +104,7 @@ body {
   gap: 10px;
 }
 .slot-button {
-  padding: 8px 12px;                                            
+  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 30px;
   background-color: #f0f0f0;
@@ -117,7 +117,7 @@ body {
   border-radius: 30px;
   color: #fff;
   transition: background-color 0.3s ease, transform 0.3s ease;
-  transform: scale(1.05); /* Pequeño efecto de escalado */
+  transform: scale(1.05);
 }
 
 /* Botón de submit */
@@ -149,5 +149,142 @@ body {
   color: red;
 }
 
+/* ============================= */
+/* NUEVOS ESTILOS PARA EL MODO DERIVACIÓN */
+/* ============================= */
 
-  
+/* Contenedor principal para derivación */
+.derivacion-header {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* ---- Estilos específicos para los campos de "Buscar estudiante", "Estudiante" y "Motivo de la cita" ---- */
+
+/* Fila de búsqueda */
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Etiqueta del campo "Buscar estudiante" */
+/* Aquí se cambió el ancho de la etiqueta del campo Buscar estudiante */
+.search-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  width: 140px;   /* Aquí se cambió el ancho de la etiqueta "Buscar estudiante" */
+  text-align: left;
+}
+
+/* Contenedor del campo de búsqueda */
+/* Aquí se cambió el ancho del campo buscar estudiante */
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 130px; /* Aquí se cambió el ancho del campo buscar estudiante */
+}
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+}
+.search-input:focus {
+  border: 2px solid #8C68CE;
+  border-radius: 22px;
+  outline: none;
+}
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #6848B0;
+  cursor: pointer;
+}
+
+/* Fila de resultado para "Estudiante" */
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Etiqueta del campo "Estudiante" */
+/* Aquí se cambió el ancho de la etiqueta del campo Estudiante */
+.result-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  width: 140px;   /* Aquí se cambió el ancho de la etiqueta "Estudiante" */
+  text-align: left;
+}
+
+/* Campo de visualización para el nombre del estudiante */
+/* Aquí se cambió el ancho del campo Estudiante */
+.result-field {
+  flex: 1;
+  max-width: 350px; /* Aquí se cambió el ancho del campo Estudiante */
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  background-color: #f9f9f9;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Fila para "Motivo de la cita" */
+.motive-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Etiqueta del campo "Motivo de la cita" */
+/* Aquí se cambió el ancho de la etiqueta del campo Motivo de la cita */
+.motive-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  width: 140px;  /* Aquí se cambió el ancho de la etiqueta "Motivo de la cita" */
+  text-align: left;
+}
+
+/* Input para el motivo de la cita */
+/* Aquí se cambió el ancho del campo Motivo de la cita */
+.motive-input {
+  flex: 1;
+  max-width: 350px; /* Aquí se cambió el ancho del campo Motivo de la cita */
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+  resize: vertical;
+}
+.motive-input:focus {
+  border: 2px solid #8C68CE;
+  border-radius: 22px;
+  outline: none;
+}
+
+/* ---- Regla para establecer la misma altura para los 3 campos ---- */
+/* Aquí se cambió la altura de los campos "Buscar estudiante", "Estudiante" y "Motivo de la cita" */
+.search-input,
+.result-field,
+.motive-input {
+  height: 40px;  /* Aquí se cambia la altura de todos los campos; modifícalo para hacerlos más cortos o más altos */
+}

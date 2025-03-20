@@ -8,10 +8,8 @@ const Header = ({ psicologo }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const headerRightRef = useRef(null);
 
-  // Extraemos el primer nombre del psicólogo
   const firstName = psicologo.nombre ? psicologo.nombre.split(' ')[0] : '';
 
-  // Función para cerrar el menú desplegable al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (headerRightRef.current && !headerRightRef.current.contains(event.target)) {
@@ -29,6 +27,22 @@ const Header = ({ psicologo }) => {
     window.location.reload();
   };
 
+  // Calcular el saludo basado en la hora en America/Lima
+  const nowTimeString = new Date().toLocaleTimeString('en-US', {
+    timeZone: 'America/Lima',
+    hour: '2-digit',
+    hour12: false
+  });
+  const hour = parseInt(nowTimeString.split(':')[0], 10);
+  let greeting;
+  if (hour < 12) {
+    greeting = 'Buenos días';
+  } else if (hour < 18) {
+    greeting = 'Buenas tardes';
+  } else {
+    greeting = 'Buenas noches';
+  }
+
   return (
     <header className="app-header">
       <div className="header-left">
@@ -44,6 +58,12 @@ const Header = ({ psicologo }) => {
         >
           Ver reporte
         </button>
+        <button 
+          className="header-button" 
+          onClick={() => navigate('/derivacion')}
+        >
+          Derivación
+        </button>
       </div>
       <div 
         className="header-right" 
@@ -51,7 +71,7 @@ const Header = ({ psicologo }) => {
         ref={headerRightRef}
       >
         <span className="greeting">
-          Hola <strong>{firstName}</strong>
+          {greeting} <strong>{firstName}</strong>
         </span>
         <img 
           src={psicologo.foto || '/default_profile.png'} 

@@ -92,6 +92,17 @@ const AppRoutes = () => {
           )
         }
       />
+      {/* Para que la ventana siempre inicie en blanco se asigna una key única */}
+      <Route
+        path="/derivacion"
+        element={
+          psicologo ? (
+            <AppointmentDetail key="derivacion" psicologo={psicologo} modoDerivacion={true} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
       <Route
         path="/report"
         element={psicologo ? <Report psicologo={psicologo} /> : <Navigate to="/" replace />}

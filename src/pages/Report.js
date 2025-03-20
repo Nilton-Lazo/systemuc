@@ -446,7 +446,10 @@ const Report = ({ psicologo }) => {
     filteredData.forEach(item => {
       worksheet.addRow({
         id: item.id,
-        fecha: capitalizeFirstLetter(new Date(item.fecha).toLocaleDateString()),
+        fecha: capitalizeFirstLetter(
+          new Date(new Date(item.fecha).setHours(new Date(item.fecha).getHours() + 5))
+            .toLocaleDateString('es-PE', { timeZone: 'America/Lima' })
+        ),        
         estado: estadoMapping[item.estado] || item.estado,
         codigo: item.estudiante?.codigo || '',
         telefono: item.estudiante?.telefono || '',
@@ -476,7 +479,11 @@ const Report = ({ psicologo }) => {
     { Header: "ID", accessor: "id", className: "default-column" },
     { 
       Header: "Fecha", 
-      accessor: row => capitalizeFirstLetter(new Date(row.fecha).toLocaleDateString()), 
+      accessor: row => {
+        const d = new Date(row.fecha);
+        d.setHours(d.getHours() + 5); // Suma 5 horas para compensar UTC-5
+        return capitalizeFirstLetter(d.toLocaleDateString('es-PE', { timeZone: 'America/Lima' }));
+      },      
       id: "fecha", 
       className: "default-column" 
     },
@@ -678,7 +685,7 @@ const Report = ({ psicologo }) => {
               <strong style={{ marginRight: '15px' }}>Días personalizados:</strong>
               <input
                 type="text"
-                placeholder="Ingrese número de días"
+                placeholder="Cant."
                 value={customDays}
                 onChange={handleCustomDaysChange}
                 disabled={selectedYears.length > 0 || selectedMonths.length > 0}
